@@ -38,7 +38,7 @@ export const useQuoteHandling = ({
       const updatedRequest = {
         ...request,
         [isRevised ? 'revisedPriceQuote' : 'priceQuote']: finalQuote,
-        status: 'quote_received' as const
+        status: isRevised ? 'quote_revised' as const : 'quote_sent' as const
       };
       
       setCurrentRequest(updatedRequest);
