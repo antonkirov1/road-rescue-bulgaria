@@ -6,7 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { toast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/utils/translations';
 import { Button } from "@/components/ui/button";
-import { Globe } from 'lucide-react';
+import { Globe, ArrowLeft } from 'lucide-react';
 import ThemeToggle from '@/components/ui/theme-toggle';
 
 const AdminAuth: React.FC = () => {
@@ -59,6 +59,15 @@ const AdminAuth: React.FC = () => {
       </div>
 
       <div className="w-full max-w-md">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Button>
+        
         <div className="mb-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">RoadSaver</h1>
           <p className="text-muted-foreground">Account Manager Panel</p>
