@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { toast } from "@/components/ui/use-toast";
 import { useApp } from '@/contexts/AppContext';
@@ -39,7 +38,7 @@ export const useServiceRequest = (
   const [eta, setEta] = useState<string | null>(null);
   const [showWaitingForRevision, setShowWaitingForRevision] = useState(false);
 
-  // Employee assignment and decline tracking per request
+  // Employee assignment and decline tracking per request - IMPROVED LOGIC
   const [assignedEmployee, setAssignedEmployee] = useState<string>('');
   const [employeeDeclineCount, setEmployeeDeclineCount] = useState<number>(0);
   const [hasReceivedRevision, setHasReceivedRevision] = useState<boolean>(false);
@@ -265,11 +264,12 @@ export const useServiceRequest = (
   const handleDeclineQuote = useCallback(async (isSecondDecline: boolean = false) => {
     if (!user || !assignedEmployee || !ongoingRequest) return;
     
-    console.log('Declining quote from employee:', assignedEmployee, 'Second decline:', isSecondDecline);
+    console.log('Declining quote from employee:', assignedEmployee, 'Current decline count:', employeeDeclineCount);
     
     const newDeclineCount = employeeDeclineCount + 1;
     setEmployeeDeclineCount(newDeclineCount);
     
+    // RULE: Allow exactly 2 declines per employee before blacklisting
     if (newDeclineCount === 1 && !hasReceivedRevision) {
       // First decline - same employee sends revision
       setShowPriceQuote(false);
@@ -305,9 +305,9 @@ export const useServiceRequest = (
         });
       }, 2000);
       
-    } else {
-      // Second decline OR decline after revision - blacklist employee and find new one
-      console.log('Second decline - blacklisting employee:', assignedEmployee);
+    } else if (newDeclineCount === 2) {
+      // Second decline - blacklist employee and find new one
+      console.log('Second decline reached - blacklisting employee:', assignedEmployee);
       
       // Add employee to blacklist
       try {
@@ -338,7 +338,7 @@ export const useServiceRequest = (
       // Reset employee assignment and find new one
       const previousEmployee = assignedEmployee;
       setAssignedEmployee('');
-      setEmployeeDeclineCount(0);
+      setEmployeeDeclineCount(0); // Reset counter for new employee
       setHasReceivedRevision(false);
       setCurrentEmployeeName('');
       
@@ -385,7 +385,7 @@ export const useServiceRequest = (
               // Clear previous employee state completely
               setCurrentEmployeeName(employeeName);
               setAssignedEmployee(employeeName); // Assign new employee
-              setEmployeeDeclineCount(0);
+              setEmployeeDeclineCount(0); // Start fresh with new employee
               setHasReceivedRevision(false);
               
               // Update ongoing request with new employee
