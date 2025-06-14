@@ -72,7 +72,7 @@ export class NewSupabaseService {
 
   async getAvailableSimulatedEmployees(): Promise<Employee[]> {
     const { data, error } = await supabase
-      .from('employees')
+      .from('employee_accounts')
       .select('*')
       .eq('is_simulated', true)
       .eq('is_available', true);
@@ -222,7 +222,7 @@ export class NewSupabaseService {
     const location = this.parsePoint(data.location);
     return {
       id: data.id,
-      name: data.name,
+      name: data.real_name || data.username,
       isSimulated: data.is_simulated,
       location: location,
       isAvailable: data.is_available

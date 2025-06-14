@@ -31,7 +31,7 @@ export interface AdminCreateUserAccount {
 }
 
 export class UserAccountService {
-  // Create a new user account in the temporary table
+  // Create a new user account using the user_accounts table
   static async createNewUserAccount(userData: NewUserAccount) {
     try {
       // Hash the password before storing
@@ -39,9 +39,9 @@ export class UserAccountService {
       const password_hash = await bcrypt.hash(userData.password, saltRounds);
 
       const { data, error } = await supabase
-        .from('new_user_accounts')
+        .from('user_accounts')
         .insert({
-          username: userData.username.toLowerCase(), // Ensure lowercase
+          username: userData.username.toLowerCase(),
           email: userData.email,
           password_hash,
           phone_number: userData.phone_number,
@@ -63,7 +63,7 @@ export class UserAccountService {
     }
   }
 
-  // Create a user account directly in existing_user_accounts table (admin only)
+  // Create a user account directly in user_accounts table (admin only)
   static async createUserByAdmin(userData: AdminCreateUserAccount) {
     try {
       // Hash the password before storing
@@ -72,7 +72,7 @@ export class UserAccountService {
 
       // Prepare the user data for insertion
       const userInsertData: any = {
-        username: userData.username.toLowerCase(), // Ensure lowercase
+        username: userData.username.toLowerCase(),
         email: userData.email,
         password_hash,
         phone_number: userData.phone_number,
@@ -97,7 +97,7 @@ export class UserAccountService {
       }
 
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .insert(userInsertData)
         .select()
         .single();
@@ -115,13 +115,13 @@ export class UserAccountService {
     }
   }
 
-  // Get all pending new user accounts
+  // Get all pending new user accounts (using user_accounts table)
   static async getPendingNewUsers() {
     try {
       const { data, error } = await supabase
-        .from('new_user_accounts')
+        .from('user_accounts')
         .select('*')
-        .is('processed_at', null)
+        .eq('created_by_admin', false)
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -140,7 +140,7 @@ export class UserAccountService {
   static async getExistingUsers() {
     try {
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -156,12 +156,15 @@ export class UserAccountService {
     }
   }
 
-  // Migrate a user from new_user_accounts to existing_user_accounts
+  // Migrate a user from pending to active (update status)
   static async migrateUserToExisting(userId: string) {
     try {
-      const { data, error } = await supabase.rpc('migrate_new_user_to_existing', {
-        user_record_id: userId
-      });
+      const { data, error } = await supabase
+        .from('user_accounts')
+        .update({ migrated_from_new_accounts: new Date().toISOString() })
+        .eq('id', userId)
+        .select()
+        .single();
 
       if (error) {
         console.error('Error migrating user:', error);
@@ -180,7 +183,7 @@ export class UserAccountService {
   static async getExistingUserById(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .select('*')
         .eq('id', userId)
         .single();
@@ -201,7 +204,7 @@ export class UserAccountService {
   static async updateExistingUser(userId: string, updates: Partial<ExistingUserAccount>) {
     try {
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .update(updates)
         .eq('id', userId)
         .select()
@@ -224,7 +227,7 @@ export class UserAccountService {
   static async updateUserStatus(userId: string, status: 'active' | 'banned') {
     try {
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .update({ status })
         .eq('id', userId)
         .select()
@@ -247,7 +250,7 @@ export class UserAccountService {
   static async deleteUser(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('existing_user_accounts')
+        .from('user_accounts')
         .delete()
         .eq('id', userId)
         .select()
@@ -266,11 +269,11 @@ export class UserAccountService {
     }
   }
 
-  // Verify password for a user in new_user_accounts
+  // Verify password for a user in user_accounts
   static async verifyNewUserPassword(username: string, password: string) {
     try {
       const { data, error } = await supabase
-        .from('new_user_accounts')
+        .from('user_accounts')
         .select('password_hash')
         .eq('username', username.toLowerCase())
         .single();

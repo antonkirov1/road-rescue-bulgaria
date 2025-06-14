@@ -53,7 +53,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ onBack }) => {
     try {
       const userData = await UserAccountService.getExistingUsers();
       const transformedUsers: UserAccount[] = (userData || []).map(user => ({
-        ...user,
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        phone_number: user.phone_number,
+        gender: user.gender,
+        full_name: user.full_name,
+        created_at: user.created_at,
+        created_by_admin: user.created_by_admin,
         status: (user.status === 'banned' ? 'banned' : 'active') as 'active' | 'banned'
       }));
       setUsers(transformedUsers);

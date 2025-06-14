@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -109,7 +108,7 @@ const MaterialDashboard: React.FC<MaterialDashboardProps> = ({ onViewChange, cur
       // Calculate revenue from completed requests
       const totalRevenue = priceQuotes?.reduce((sum, quote) => sum + (Number(quote.total_price) || 0), 0) || 0;
 
-      // Count banned users and suspended employees
+      // Count banned users and suspended employees safely
       const bannedUsers = existingUsers?.filter(user => user.status === 'banned').length || 0;
       const suspendedEmployees = employees.filter(emp => emp.status === 'suspended').length || 0;
       
