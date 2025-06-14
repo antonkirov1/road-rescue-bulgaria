@@ -9,6 +9,272 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_accounts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_builtin: boolean | null
+          password_hash: string
+          real_name: string | null
+          status: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_builtin?: boolean | null
+          password_hash: string
+          real_name?: string | null
+          status?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_builtin?: boolean | null
+          password_hash?: string
+          real_name?: string | null
+          status?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
+      chat_message_reactions: {
+        Row: {
+          created_at: string
+          employee_id: string | null
+          id: string
+          message_id: string
+          reaction_type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          message_id: string
+          reaction_type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          message_id?: string
+          reaction_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_message_reactions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_deleted: boolean | null
+          is_edited: boolean | null
+          message_text: string
+          message_type: string | null
+          reply_to_message_id: string | null
+          room_id: string
+          sender_employee_id: string | null
+          sender_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          is_edited?: boolean | null
+          message_text: string
+          message_type?: string | null
+          reply_to_message_id?: string | null
+          room_id: string
+          sender_employee_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          is_edited?: boolean | null
+          message_text?: string
+          message_type?: string | null
+          reply_to_message_id?: string | null
+          room_id?: string
+          sender_employee_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_employee_id_fkey"
+            columns: ["sender_employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_notifications: {
+        Row: {
+          created_at: string
+          employee_id: string | null
+          id: string
+          is_read: boolean | null
+          message_id: string
+          room_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_id: string
+          room_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_id?: string
+          room_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_notifications_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_notifications_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_notifications_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          employee_id: string | null
+          id: string
+          joined_at: string
+          left_at: string | null
+          role: string | null
+          room_id: string
+          user_id: string | null
+        }
+        Insert: {
+          employee_id?: string | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          role?: string | null
+          room_id: string
+          user_id?: string | null
+        }
+        Update: {
+          employee_id?: string | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          role?: string | null
+          room_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       employee_accounts: {
         Row: {
           auth_user_id: string | null
@@ -16,6 +282,10 @@ export type Database = {
           email: string
           employee_role: string | null
           id: string
+          is_available: boolean | null
+          is_builtin: boolean | null
+          is_simulated: boolean | null
+          location: unknown | null
           password_hash: string | null
           phone_number: string | null
           real_name: string | null
@@ -28,6 +298,10 @@ export type Database = {
           email: string
           employee_role?: string | null
           id?: string
+          is_available?: boolean | null
+          is_builtin?: boolean | null
+          is_simulated?: boolean | null
+          location?: unknown | null
           password_hash?: string | null
           phone_number?: string | null
           real_name?: string | null
@@ -40,6 +314,10 @@ export type Database = {
           email?: string
           employee_role?: string | null
           id?: string
+          is_available?: boolean | null
+          is_builtin?: boolean | null
+          is_simulated?: boolean | null
+          location?: unknown | null
           password_hash?: string | null
           phone_number?: string | null
           real_name?: string | null
@@ -101,123 +379,6 @@ export type Database = {
           employee_number?: number
           full_name?: string
           id?: number
-        }
-        Relationships: []
-      }
-      employees: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_available: boolean | null
-          is_simulated: boolean | null
-          location: unknown | null
-          name: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_available?: boolean | null
-          is_simulated?: boolean | null
-          location?: unknown | null
-          name: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_available?: boolean | null
-          is_simulated?: boolean | null
-          location?: unknown | null
-          name?: string
-        }
-        Relationships: []
-      }
-      existing_user_accounts: {
-        Row: {
-          auth_user_id: string | null
-          created_at: string
-          created_by_admin: boolean | null
-          email: string
-          full_name: string | null
-          gender: string | null
-          id: string
-          migrated_from_new_accounts: string | null
-          password_hash: string | null
-          phone_number: string | null
-          secret_answer_1: string | null
-          secret_answer_2: string | null
-          secret_question_1: string | null
-          secret_question_2: string | null
-          status: string | null
-          username: string
-        }
-        Insert: {
-          auth_user_id?: string | null
-          created_at?: string
-          created_by_admin?: boolean | null
-          email: string
-          full_name?: string | null
-          gender?: string | null
-          id?: string
-          migrated_from_new_accounts?: string | null
-          password_hash?: string | null
-          phone_number?: string | null
-          secret_answer_1?: string | null
-          secret_answer_2?: string | null
-          secret_question_1?: string | null
-          secret_question_2?: string | null
-          status?: string | null
-          username: string
-        }
-        Update: {
-          auth_user_id?: string | null
-          created_at?: string
-          created_by_admin?: boolean | null
-          email?: string
-          full_name?: string | null
-          gender?: string | null
-          id?: string
-          migrated_from_new_accounts?: string | null
-          password_hash?: string | null
-          phone_number?: string | null
-          secret_answer_1?: string | null
-          secret_answer_2?: string | null
-          secret_question_1?: string | null
-          secret_question_2?: string | null
-          status?: string | null
-          username?: string
-        }
-        Relationships: []
-      }
-      new_user_accounts: {
-        Row: {
-          created_at: string
-          email: string
-          gender: string | null
-          id: string
-          password_hash: string
-          phone_number: string | null
-          processed_at: string | null
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          gender?: string | null
-          id?: string
-          password_hash: string
-          phone_number?: string | null
-          processed_at?: string | null
-          username: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          gender?: string | null
-          id?: string
-          password_hash?: string
-          phone_number?: string | null
-          processed_at?: string | null
-          username?: string
         }
         Relationships: []
       }
@@ -404,6 +565,66 @@ export type Database = {
           id?: string
           key?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_accounts: {
+        Row: {
+          auth_user_id: string | null
+          created_at: string
+          created_by_admin: boolean | null
+          email: string
+          full_name: string | null
+          gender: string | null
+          id: string
+          is_builtin: boolean | null
+          migrated_from_new_accounts: string | null
+          password_hash: string | null
+          phone_number: string | null
+          secret_answer_1: string | null
+          secret_answer_2: string | null
+          secret_question_1: string | null
+          secret_question_2: string | null
+          status: string | null
+          username: string
+        }
+        Insert: {
+          auth_user_id?: string | null
+          created_at?: string
+          created_by_admin?: boolean | null
+          email: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          is_builtin?: boolean | null
+          migrated_from_new_accounts?: string | null
+          password_hash?: string | null
+          phone_number?: string | null
+          secret_answer_1?: string | null
+          secret_answer_2?: string | null
+          secret_question_1?: string | null
+          secret_question_2?: string | null
+          status?: string | null
+          username: string
+        }
+        Update: {
+          auth_user_id?: string | null
+          created_at?: string
+          created_by_admin?: boolean | null
+          email?: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          is_builtin?: boolean | null
+          migrated_from_new_accounts?: string | null
+          password_hash?: string | null
+          phone_number?: string | null
+          secret_answer_1?: string | null
+          secret_answer_2?: string | null
+          secret_question_1?: string | null
+          secret_question_2?: string | null
+          status?: string | null
+          username?: string
         }
         Relationships: []
       }
